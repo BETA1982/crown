@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>口腔治療預估流程與費用</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* palette: #3e4274 #5c6198 #b9bbdd #d9daeb #fffefa
+   VOICE: calm, clinical, reassuring — a clinic's printed treatment card
+   IDEA: a treatment appointment card / 療程卡 the patient keeps
+   PICTURE: the visit timeline itself, with fees hanging on the right
+   COLOUR and TYPE: porcelain white, deep clinic blue, one coral accent; Noto Serif TC titles, Noto Sans TC body
+   LAYOUT: one column card; staff edit view and clean patient view for screenshots */
+:root{color-scheme:light dark;
+--bg:light-dark(#fffefa,#1e2040);--card:light-dark(#fffefa,#2a2d52);--ink:light-dark(#3e4274,#fffefa);
+--mute:light-dark(#5c6198,#b9bbdd);--line:light-dark(#d9daeb,#3e4274);--blue:light-dark(#3e4274,#b9bbdd);
+--blue2:light-dark(#d9daeb,#3e4274);--coral:light-dark(#5c6198,#d9daeb);--field:light-dark(#fffefa,#1e2040);
+--head:#3e4274;--soft:#b9bbdd}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans TC",system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:760px;margin:0 auto;padding:clamp(16px,4vw,40px) max(4vw,12px) 60px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.seg{display:inline-flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px}
+.seg button{border:0;background:none;color:var(--mute);font:500 15px "Noto Sans TC";padding:0 18px;min-height:40px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--blue);color:var(--card)}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);font:500 15px "Noto Sans TC";padding:0 16px;min-height:44px;border-radius:10px;cursor:pointer}
+.btn.pri{background:var(--blue);color:var(--card);border-color:var(--blue)}
+.btn.ghost{border-style:dashed;color:var(--blue);width:100%}
+.x{border:0;background:none;color:var(--mute);font-size:20px;width:44px;height:44px;cursor:pointer;border-radius:10px;flex:none}
+.x:hover{color:var(--coral);background:var(--blue2)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+.card{background:var(--card);border-radius:20px;border:1px solid var(--blue2);box-shadow:0 18px 40px -28px rgba(62,66,116,.3);overflow:hidden}
+.head{background:var(--card);color:var(--ink);border-bottom:2px solid var(--blue2);padding:clamp(22px,4vw,34px) clamp(18px,4vw,36px)}
+.clinic{font-size:14px;color:var(--mute);font-weight:500;letter-spacing:.04em}
+h1{color:var(--ink);font:700 clamp(28px,5vw,40px)/1.15 "Noto Serif TC",serif;margin:6px 0 0;text-wrap:balance}
+.card{position:relative}
+.wm{position:absolute;left:50%;top:50%;width:min(60%,360px);aspect-ratio:1;transform:translate(-50%,-50%);opacity:.2;pointer-events:none;z-index:0;border-radius:12px}
+.card>.head,.card>.body{position:relative;z-index:1}
+.head{background:transparent!important}
+.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}
+.meta label{font-size:13px;color:var(--mute);display:block}
+.meta input,.meta select{width:100%;font:16px "Noto Sans TC";color:var(--ink);background:var(--field);border:1px solid var(--soft);border-radius:8px;padding:8px 10px;min-height:44px}
+.meta select option{color:var(--ink);background:var(--card)}
+.meta input::placeholder{color:var(--mute);opacity:.6}
+.meta .v{font-size:17px;font-weight:500;min-height:1.6em}
+.body{padding:clamp(18px,4vw,36px)}
+.tl{list-style:none;margin:0;padding:0}
+.visit{position:relative;padding:0 0 26px 40px}
+.visit::before{content:"";position:absolute;left:13px;top:30px;bottom:0;width:2px;background:var(--soft)}
+.visit:last-child::before{display:none}
+.dot{position:absolute;left:0;top:2px;width:28px;height:28px;border-radius:50%;background:var(--blue2);color:var(--ink);font:700 14px/24px "Noto Sans TC";text-align:center;border:2px solid var(--coral)}
+.vtop{display:flex;gap:10px;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
+.vt{font:700 20px/1.3 "Noto Serif TC",serif;margin:0}
+.fee{font-weight:700;color:var(--blue);white-space:nowrap;font-variant-numeric:tabular-nums}
+.fee.tbd{color:var(--mute);font-weight:500}
+.items{margin:8px 0 0;padding:0;list-style:none}
+.items li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.items li:last-child{border-bottom:0}
+.items .add{color:var(--coral);font-weight:500}
+.items .add::before{content:"＋ ";font-weight:700}
+.items small{color:var(--mute);white-space:nowrap;font-variant-numeric:tabular-nums}
+.total{margin-top:6px;background:var(--blue2);border-radius:14px;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.total b{font:700 clamp(24px,5vw,34px)/1.1 "Noto Sans TC";color:var(--blue);white-space:nowrap;font-variant-numeric:tabular-nums}
+.note{margin-top:16px;color:var(--mute);font-size:14px;white-space:pre-wrap}
+/* edit view */
+.ev{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;background:var(--card)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.f{font:16px "Noto Sans TC";color:var(--ink);background:var(--field);border:1px solid var(--soft);border-radius:8px;padding:8px 10px;min-height:44px;width:100%}
+.f.n{width:7.5em;text-align:right;font-variant-numeric:tabular-nums}
+.lab{font-size:13px;color:var(--mute);margin:12px 0 4px}
+.ex{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto auto auto;gap:6px;align-items:center;padding:4px 0}
+.ex input[type=checkbox]{width:22px;height:22px;accent-color:var(--coral)}
+.dash{color:var(--mute)}
+.hint{font-size:13px;color:var(--mute);margin:6px 0 0}
+@media(max-width:600px){.meta{grid-template-columns:1fr 1fr}
+.ex{grid-template-columns:auto minmax(0,1fr) auto;row-gap:2px}.ex .f.n{width:100%}.ex .mn{grid-column:2}.ex .dash{display:none}.ex .mx{grid-column:2}.ex .x{grid-row:1;grid-column:3}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <div class="seg" role="group" aria-label="檢視模式">
+      <button id="mEdit" aria-pressed="true">編輯</button>
+      <button id="mView" aria-pressed="false">患者版（截圖用）</button>
+    </div>
+    <button class="btn" id="reset">還原預設</button>
+  </div>
+  <div id="app"></div>
+  <p class="hint" id="hint">在「編輯」勾選這位患者要加做的項目、填入費用，再切到「患者版」截圖。資料只存在這台裝置的瀏覽器。</p>
+</div>
+<datalist id="presets">
+  <option value="根管治療"><option value="拔牙"><option value="牙周處理"><option value="咬合調整">
+  <option value="齒色比對"><option value="臨時假牙修補"><option value="牙冠增長術">
+</datalist>
+<script>
+{
+const KEY='brilliant-denture-v1';
+const uid=()=>Math.random().toString(36).slice(2,9);
+const preset=()=>({patient:{name:'',tooth:'',date:new Date().toISOString().slice(0,10)},
+  visits:[
+    {id:uid(),title:'第一次診療',items:['取模（臨時假牙用）','牙心'],min:2000,max:5000,extras:[]},
+    {id:uid(),title:'第二次診療',items:['取模（正式假牙用）','完成臨時假牙','牙心'],min:3000,max:6000,extras:[]},
+    {id:uid(),title:'第三次診療',items:['完成正式假牙'],min:null,max:null,extras:[]}
+  ],
+  note:'以上為預估費用，實際金額依醫師診斷與治療內容為準。'});
+let S,mode='edit';
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.visits)S=preset();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>v===''||v==null||isNaN(+v)?null:+v;
+const money=n=>'NT$'+n.toLocaleString('en-US');
+const range=(a,b)=>{a=num(a);b=num(b);
+  if(a==null&&b==null)return null;if(a==null)a=b;if(b==null)b=a;
+  return a===b?money(a):money(a)+' – '+(b).toLocaleString('en-US')};
+const ZH=['一','二','三','四','五','六','七','八','九','十'];
+function totals(){let lo=0,hi=0,tbd=false;
+  for(const v of S.visits){const parts=[[v.min,v.max],...v.extras.filter(e=>e.on).map(e=>[e.min,e.max])];
+    for(const[a,b]of parts){let x=num(a),y=num(b);if(x==null&&y==null){tbd=true;continue}
+      if(x==null)x=y;if(y==null)y=x;lo+=x;hi+=y}}
+  return{lo,hi,tbd}}
+function totalHTML(){const t=totals();
+  const txt=t.lo||t.hi?(t.lo===t.hi?money(t.lo):money(t.lo)+' – '+t.hi.toLocaleString('en-US')):'待確認';
+  return `<div class="total"><span>預估總費用${t.tbd?'<br><small style="color:var(--mute)">部分費用待醫師確認，未計入</small>':''}</span><b>${txt}</b></div>`}
+const app=document.getElementById('app');
+function head(edit){const p=S.patient;
+  const f=(k,l,ph,type='text')=>edit
+    ?`<div><label for="p-${k}">${l}</label><input id="p-${k}" data-p="${k}" type="${type}" value="${esc(p[k])}" placeholder="${ph}"></div>`
+    :`<div><label>${l}</label><div class="v">${esc(p[k])||'—'}</div></div>`;
+  return `<div class="head"><div class="clinic">柏麗牙醫</div><h1>口腔治療預估流程與費用</h1>
+    <div class="meta">${f('name','患者','選填')}${f('tooth','牙位','例：#36')}${doc(edit)}${f('date','建立日期','', 'date')}</div></div>`}
+const WM='<img class="wm" alt="" aria-hidden="true" src="assets/logo.png">';
+const DOCS=['張俊彥醫師','陳人豪醫師','劉惟中醫師','簡力伶醫師','劉釗誌醫師','陳柏妤醫師'];
+function doc(edit){const d=S.patient.doctor||'';
+  return edit?`<div><label for="p-doctor">治療醫師</label><select id="p-doctor" data-p="doctor"><option value="">請選擇</option>${DOCS.map(n=>`<option${n===d?' selected':''}>${n}</option>`).join('')}</select></div>`
+    :`<div><label>治療醫師</label><div class="v">${esc(d)||'—'}</div></div>`}
+function viewHTML(){
+  return `<div class="card">${WM}${head(false)}<div class="body"><ol class="tl">${S.visits.map((v,i)=>{
+    const r=range(v.min,v.max);const ex=v.extras.filter(e=>e.on);
+    return `<li class="visit"><span class="dot">${i+1}</span>
+      <div class="vtop"><h2 class="vt">${esc(v.title)}</h2><span class="fee ${r?'':'tbd'}">${r||'費用待確認'}</span></div>
+      <ul class="items">${v.items.filter(Boolean).map(t=>`<li><span>${esc(t)}</span></li>`).join('')}
+      ${ex.map(e=>{const er=range(e.min,e.max);return `<li><span class="add">${esc(e.name)||'加做項目'}</span><small>${er||'待確認'}</small></li>`}).join('')}</ul></li>`}).join('')}
+    </ol>${totalHTML()}${S.note?`<div class="note">${esc(S.note)}</div>`:''}</div></div>`}
+function editHTML(){
+  return `<div class="card">${WM}${head(true)}<div class="body">${S.visits.map((v,i)=>`
+    <div class="ev" data-v="${v.id}">
+      <div class="row"><span class="dot" style="position:static">${i+1}</span>
+        <input class="f" style="flex:1" data-k="title" value="${esc(v.title)}" aria-label="診療名稱">
+        <button class="x" data-act="up" title="上移" aria-label="上移" ${i?'':'disabled'}>↑</button>
+        <button class="x" data-act="delv" title="刪除這次診療" aria-label="刪除這次診療">×</button></div>
+      <div class="lab">當次內容（一行一項）</div>
+      <textarea class="f" rows="${Math.max(2,v.items.length)}" data-k="items">${esc(v.items.join('\n'))}</textarea>
+      <div class="lab">當次基本費用（只填一格＝固定金額；都空白＝待確認）</div>
+      <div class="row"><input class="f n" inputmode="numeric" data-k="min" value="${v.min??''}" placeholder="最低" aria-label="最低費用">
+        <span class="dash">–</span><input class="f n" inputmode="numeric" data-k="max" value="${v.max??''}" placeholder="最高" aria-label="最高費用"></div>
+      <div class="lab">加做項目（勾選才會出現在患者版）</div>
+      ${v.extras.map(e=>`<div class="ex" data-e="${e.id}">
+        <input type="checkbox" data-ek="on" ${e.on?'checked':''} aria-label="套用">
+        <input class="f" list="presets" data-ek="name" value="${esc(e.name)}" placeholder="項目名稱">
+        <input class="f n mn" inputmode="numeric" data-ek="min" value="${e.min??''}" placeholder="最低">
+        <span class="dash">–</span>
+        <input class="f n mx" inputmode="numeric" data-ek="max" value="${e.max??''}" placeholder="最高">
+        <button class="x" data-act="dele" aria-label="刪除項目">×</button></div>`).join('')}
+      <button class="btn ghost" data-act="adde">＋ 新增加做項目</button>
+    </div>`).join('')}
+    <button class="btn ghost" data-act="addv" style="margin-bottom:16px">＋ 新增一次診療</button>
+    <div id="tot">${totalHTML()}</div>
+    <div class="lab">頁尾說明</div>
+    <textarea class="f" rows="2" data-note>${esc(S.note)}</textarea>
+  </div></div>`}
+function render(){app.innerHTML=mode==='edit'?editHTML():viewHTML();
+  document.getElementById('hint').style.display=mode==='edit'?'':'none';
+  mEdit.setAttribute('aria-pressed',mode==='edit');mView.setAttribute('aria-pressed',mode==='view')}
+const findV=el=>S.visits.find(v=>v.id===el.closest('[data-v]')?.dataset.v);
+app.addEventListener('input',ev=>{const t=ev.target;
+  if(t.dataset.p){S.patient[t.dataset.p]=t.value}
+  else if('note'in t.dataset){S.note=t.value}
+  else{const v=findV(t);if(!v)return;
+    if(t.dataset.k==='items')v.items=t.value.split('\n');
+    else if(t.dataset.k==='title')v.title=t.value;
+    else if(t.dataset.k)v[t.dataset.k]=num(t.value.replace(/[^\d]/g,''));
+    else if(t.dataset.ek){const e=v.extras.find(x=>x.id===t.closest('[data-e]').dataset.e);
+      const k=t.dataset.ek;e[k]=k==='on'?t.checked:k==='name'?t.value:num(t.value.replace(/[^\d]/g,''))}}
+  const tot=document.getElementById('tot');if(tot)tot.innerHTML=totalHTML();save()});
+app.addEventListener('change',ev=>{if(ev.target.type==='checkbox')app.dispatchEvent(new Event('input'))});
+app.addEventListener('click',ev=>{const b=ev.target.closest('[data-act]');if(!b)return;const v=findV(b);const a=b.dataset.act;
+  if(a==='adde')v.extras.push({id:uid(),name:'',min:null,max:null,on:true});
+  if(a==='dele')v.extras=v.extras.filter(e=>e.id!==b.closest('[data-e]').dataset.e);
+  if(a==='delv'&&S.visits.length>1)S.visits=S.visits.filter(x=>x!==v);
+  if(a==='up'){const i=S.visits.indexOf(v);if(i>0)[S.visits[i-1],S.visits[i]]=[S.visits[i],S.visits[i-1]]}
+  if(a==='addv'){const n=S.visits.length;S.visits.push({id:uid(),title:`第${ZH[n]||n+1}次診療`,items:[''],min:null,max:null,extras:[]})}
+  save();render()});
+const mEdit=document.getElementById('mEdit'),mView=document.getElementById('mView');
+mEdit.onclick=()=>{mode='edit';render()};
+mView.onclick=()=>{mode='view';render();window.scrollTo(0,0)};
+let armed=false;const rs=document.getElementById('reset');
+rs.onclick=()=>{if(!armed){armed=true;rs.textContent='再按一次確認還原';setTimeout(()=>{armed=false;rs.textContent='還原預設'},3000);return}
+  S=preset();save();armed=false;rs.textContent='還原預設';render()};
+render();
+}
+</script>
+</body>
+</html>
